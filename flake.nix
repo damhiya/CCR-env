@@ -30,7 +30,6 @@
           inherit coq;
           menhir = coq.ocamlPackages.menhir;
           menhirLib = coq.ocamlPackages.menhirLib;
-          coq-menhirlib = callPackage ./coq-menhirlib { version = menhir.version; };
           paco = callPackage coqPackages.paco.override { version = "4.1.2"; };
           coq-ext-lib = callPackage coqPackages.coq-ext-lib.override { version = "0.12.0"; };
           ITree = callPackage coqPackages.ITree.override { version = "4.0.0"; };
@@ -38,7 +37,19 @@
           stdpp = callPackage coqPackages.stdpp.override { version = "1.7.0"; };
           iris = callPackage coqPackages.iris.override { version = "3.6.0"; };
           flocq = callPackage coqPackages.flocq.override { version = "4.2.0"; };
-          compcert = callPackage coqPackages.compcert.override { version = "3.11"; };
+          coq-menhirlib = callPackage ./coq-menhirlib { version = menhir.version; };
+          compcert = callPackage (coqPackages.compcert.overrideAttrs (oldAttrs: {
+            buildInputs = oldAttrs.buildInputs ++ [ coq-menhirlib ];
+            configurePhase = ''
+              ./configure -clightgen \
+              -prefix $out \
+              -coqdevdir $lib/lib/coq/${coq.coq-version}/user-contrib/compcert/ \
+              -toolprefix ${pkgs.stdenv.cc}/bin/ \
+              -use-external-Flocq \
+              -use-external-MenhirLib \
+              x86_64-linux
+            '';
+          })).override { version = "3.11"; };
         };
       in
       {
