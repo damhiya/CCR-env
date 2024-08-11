@@ -1,8 +1,8 @@
 { lib, mkCoqDerivation, coq, version ? null }:
 mkCoqDerivation {
   pname = "Ordinal";
-  owner = "snu-sf";
   inherit version;
+  owner = "snu-sf";
   release."0.5.2".sha256 = "sha256-jf16EyLAnKm+42K+gTTHVFJqeOVQfIY2ozbxIs5x5DE=";
   releaseRev = v: "v${v}";
 
