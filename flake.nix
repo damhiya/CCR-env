@@ -22,12 +22,12 @@
         coqPackages = pkgs.mkCoqPackages coq;
         callPackage = pkgs.lib.callPackageWith (pkgs // params // set);
         params = {
-          lib = import (nixpkgs + "/pkgs/build-support/coq/extra-lib.nix") { lib = pkgs.lib; };
-          inherit (coqPackages) mkCoqDerivation;
-          inherit (coq) ocaml ocamlPackages;
+          inherit (coqPackages) mkCoqDerivation lib;
+          inherit (coq) ocamlPackages;
         };
         set = rec {
           inherit coq;
+          ocaml = coq.ocaml;
           menhir = coq.ocamlPackages.menhir;
           menhirLib = coq.ocamlPackages.menhirLib;
           paco = callPackage coqPackages.paco.override { version = "4.1.2"; };
@@ -54,7 +54,7 @@
       in
       {
         devShell = pkgs.mkShell {
-          nativeBuildInputs = [ coq.ocamlPackages.ocamlbuild ];
+          nativeBuildInputs = [ coq.ocamlPackages.ocamlbuild pkgs.perl ];
           buildInputs = pkgs.lib.attrValues set;
         };
       }
