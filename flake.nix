@@ -26,8 +26,11 @@
           inherit (coqPackages) mkCoqDerivation;
           inherit (coq) ocaml ocamlPackages;
         };
-        set = {
+        set = rec {
           inherit coq;
+          menhir = coq.ocamlPackages.menhir;
+          menhirLib = coq.ocamlPackages.menhirLib;
+          coq-menhirlib = callPackage ./coq-menhirlib { version = menhir.version; };
           paco = callPackage coqPackages.paco.override { version = "4.1.2"; };
           coq-ext-lib = callPackage coqPackages.coq-ext-lib.override { version = "0.12.0"; };
           ITree = callPackage coqPackages.ITree.override { version = "4.0.0"; };
@@ -40,7 +43,7 @@
       in
       {
         devShell = pkgs.mkShell {
-          nativeBuildInputs = [ params.ocamlPackages.ocamlbuild ];
+          nativeBuildInputs = [ coq.ocamlPackages.ocamlbuild ];
           buildInputs = pkgs.lib.attrValues set;
         };
       }
